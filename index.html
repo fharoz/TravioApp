@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Travio — Smart Travel, Simplified.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0d1b3e;--teal:#00c2b8;--teal2:#00a09a;--orange:#ff6b35;--cream:#f8f5f0;--white:#ffffff;--gray:#8a8fa8;--light:#eef0f7;--border:rgba(13,27,62,.09);--card:#ffffff;--sw:240px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px}
+body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--navy);min-height:100vh;display:flex;flex-direction:column}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:200;height:60px;background:var(--navy);display:flex;align-items:center;padding:0 1.5rem;gap:1rem;box-shadow:0 2px 20px rgba(0,0,0,.25)}
+.topbar-logo{display:flex;align-items:center;gap:.5rem;text-decoration:none;cursor:pointer}
+.brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;letter-spacing:-.02em}
+.brand span{color:var(--teal)}
+.tsearch{flex:1;max-width:400px;margin-left:1.5rem;display:flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:.45rem .9rem}
+.tsearch input{background:transparent;border:none;outline:none;color:#fff;font-family:'Instrument Sans',sans-serif;font-size:.85rem;width:100%}
+.tsearch input::placeholder{color:rgba(255,255,255,.4)}
+.tright{margin-left:auto;display:flex;align-items:center;gap:.75rem}
+.trip-badge{background:var(--teal);color:var(--navy);font-family:'Syne',sans-serif;font-weight:700;font-size:.7rem;padding:.3rem .8rem;border-radius:20px;cursor:pointer;transition:background .2s}
+.trip-badge:hover{background:var(--teal2)}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;color:#fff}
+.layout{display:flex;margin-top:60px;min-height:calc(100vh - 60px)}
+.sidebar{width:var(--sw);flex-shrink:0;background:var(--white);border-right:1px solid var(--border);position:fixed;top:60px;bottom:0;left:0;overflow-y:auto;padding:1.5rem 0;display:flex;flex-direction:column}
+.slabel{font-family:'Syne',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);padding:0 1.25rem;margin-bottom:.5rem}
+.ssec{margin-bottom:1.75rem}
+.nitem{display:flex;align-items:center;gap:.75rem;padding:.62rem 1.25rem;cursor:pointer;font-size:.875rem;color:var(--navy);transition:background .15s,color .15s;border-left:3px solid transparent;text-decoration:none}
+.nitem:hover{background:var(--light);color:var(--teal2)}
+.nitem.active{background:rgba(0,194,184,.08);color:var(--teal2);border-left-color:var(--teal);font-weight:500}
+.nitem .ic{font-size:1.1rem;width:22px;text-align:center;flex-shrink:0}
+.nbadge{margin-left:auto;background:var(--orange);color:#fff;font-size:.6rem;font-weight:700;border-radius:10px;padding:.15rem .45rem}
+.stcard{margin:0 1rem 1rem;background:linear-gradient(135deg,var(--navy),#1a3a6e);border-radius:10px;padding:1rem;color:#fff}
+.stc-lbl{font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:.35rem;font-weight:600}
+.stc-dest{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem}
+.stc-dates{font-size:.75rem;color:rgba(255,255,255,.6);margin-top:.2rem}
+.stc-prog{margin-top:.75rem}
+.stc-prog-lbl{display:flex;justify-content:space-between;font-size:.68rem;color:rgba(255,255,255,.55);margin-bottom:.3rem}
+.stc-bar{height:4px;background:rgba(255,255,255,.15);border-radius:2px}
+.stc-fill{height:4px;background:var(--teal);border-radius:2px;width:33%}
+.main{margin-left:var(--sw);flex:1;padding:2rem;min-height:calc(100vh - 60px)}
+.scr{display:none;animation:fadeIn .25s ease}
+.scr.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.ph{margin-bottom:2rem}
+.ph h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;letter-spacing:-.03em;margin-bottom:.3rem}
+.ph p{color:var(--gray);font-size:.9rem}
+.bc{font-size:.75rem;color:var(--gray);margin-bottom:.5rem}
+.bc span{color:var(--teal);cursor:pointer}
+.bc span:hover{text-decoration:underline}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.65rem 1.4rem;border-radius:8px;border:none;font-family:'Instrument Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .18s;text-decoration:none}
+.btn-p{background:var(--navy);color:#fff}
+.btn-p:hover{background:#162d5c}
+.btn-t{background:var(--teal);color:var(--navy)}
+.btn-t:hover{background:var(--teal2)}
+.btn-o{background:transparent;color:var(--navy);border:1.5px solid var(--border)}
+.btn-o:hover{background:var(--light)}
+.btn-s{padding:.4rem .9rem;font-size:.78rem;border-radius:6px}
+.fgrp{margin-bottom:1.25rem}
+.flbl{display:block;font-size:.8rem;font-weight:500;margin-bottom:.4rem;color:var(--navy)}
+.finp{width:100%;padding:.65rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-family:'Instrument Sans',sans-serif;font-size:.875rem;background:#fff;color:var(--navy);outline:none;transition:border-color .15s}
+.finp:focus{border-color:var(--teal)}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem;margin-bottom:2rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(13,27,62,.1)}
+.cbody{padding:1rem}
+.ctit{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.3rem}
+.csub{font-size:.8rem;color:var(--gray);line-height:1.5}
+.cfoot{padding:.75rem 1rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ctag{font-size:.68rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.2rem .6rem;border-radius:20px}
+.tg{background:rgba(0,194,184,.12);color:var(--teal2)}
+.to{background:rgba(255,107,53,.12);color:var(--orange)}
+.tn{background:rgba(13,27,62,.08);color:var(--navy)}
+.stit{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+hr.shr{border:none;border-top:1px solid var(--border);margin:2rem 0}
+
+/* ── HERO ── */
+.dhero{background:linear-gradient(135deg,var(--navy) 0%,#1a3a6e 100%);border-radius:16px;padding:2.5rem;margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between;overflow:hidden;position:relative}
+.dhero::after{content:'✈';position:absolute;right:2rem;top:50%;transform:translateY(-50%);font-size:8rem;opacity:.06;pointer-events:none}
+.dhero-txt h2{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;color:#fff;margin-bottom:.5rem}
+.dhero-txt p{color:rgba(255,255,255,.6);font-size:.9rem;max-width:400px;line-height:1.6}
+.dsbox{background:rgba(255,255,255,.1);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:1.25rem;display:flex;gap:.75rem;align-items:flex-end;min-width:300px}
+.dsbox .finp{background:rgba(255,255,255,.95)}
+.dsbox .flbl{color:rgba(255,255,255,.7)}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:1rem;margin-bottom:2rem}
+.pcard{border-radius:12px;overflow:hidden;cursor:pointer;position:relative;height:155px;transition:transform .2s}
+.pcard:hover{transform:scale(1.03)}
+.pcbg{width:100%;height:100%;display:flex;align-items:flex-end;padding:1rem;background:linear-gradient(to bottom,transparent 30%,rgba(0,0,0,.65))}
+.pcinfo{color:#fff}
+.pcinfo h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem}
+.pcinfo p{font-size:.72rem;opacity:.8}
+.ps{background:linear-gradient(135deg,#1a5276,#2e86c1,#85c1e9)}
+.pt{background:linear-gradient(135deg,#922b21,#e74c3c,#f1948a)}
+.pp{background:linear-gradient(135deg,#1a5276,#7d6608,#d4ac0d)}
+.pb{background:linear-gradient(135deg,#0e6655,#1abc9c,#76d7c4)}
+.pn{background:linear-gradient(135deg,#212f3d,#5d6d7e,#aab7b8)}
+.pr{background:linear-gradient(135deg,#7d6608,#f39c12,#f8c471)}
+
+/* ── VISA ── */
+.vbox{background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:2rem;margin-bottom:2rem}
+.vres{border-radius:12px;padding:1.5rem;margin-top:1.5rem;display:none}
+.vres.show{display:block;animation:fadeIn .3s ease}
+.vok{background:rgba(0,194,184,.08);border:1.5px solid rgba(0,194,184,.3)}
+.vreq{background:rgba(255,107,53,.08);border:1.5px solid rgba(255,107,53,.3)}
+.vres h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:.5rem}
+.vres p{font-size:.875rem;color:var(--navy);line-height:1.6;margin-bottom:.75rem}
+.vsteps{list-style:none;counter-reset:s}
+.vsteps li{counter-increment:s;padding:.6rem .9rem;margin-bottom:.4rem;background:rgba(255,255,255,.8);border-radius:8px;font-size:.83rem;display:flex;align-items:center;gap:.75rem}
+.vsteps li::before{content:counter(s);background:var(--teal);color:var(--navy);width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0}
+.embc{background:#fff;border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-top:1rem;display:flex;align-items:flex-start;gap:1rem}
+.embico{font-size:1.8rem;flex-shrink:0}
+.embinfo h4{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:.25rem}
+.embinfo p{font-size:.78rem;color:var(--gray);line-height:1.5}
+.lbtn{color:var(--teal);font-size:.8rem;font-weight:500;cursor:pointer;text-decoration:none}
+.lbtn:hover{text-decoration:underline}
+
+/* ── FLIGHTS ── */
+.fsbar{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:1rem;align-items:flex-end}
+.flist{display:flex;flex-direction:column;gap:1rem}
+.frow{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;gap:1.5rem;transition:border-color .2s,box-shadow .2s;cursor:pointer;position:relative}
+.frow:hover{border-color:var(--teal);box-shadow:0 4px 20px rgba(0,194,184,.1)}
+.frow.best{border-color:var(--teal)}
+.bbadge{position:absolute;top:-10px;left:1rem;background:var(--teal);color:var(--navy);font-size:.65rem;font-weight:700;padding:.2rem .7rem;border-radius:10px;letter-spacing:.05em}
+.airl{display:flex;align-items:center;gap:.6rem;min-width:100px}
+.alogo{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.7rem;color:#fff}
+.alk{background:#003499}.alj{background:#d70000}.als{background:#0f3c78}.ale{background:#c60c30}
+.anm{font-size:.8rem;font-weight:500}
+.acd{font-size:.7rem;color:var(--gray)}
+.ftimes{display:flex;align-items:center;gap:1rem;flex:1}
+.ftc{text-align:center}
+.ftt{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem}
+.fta{font-size:.7rem;color:var(--gray)}
+.farr{color:var(--gray);font-size:.8rem;flex:1;text-align:center;position:relative}
+.farr::before,.farr::after{content:'';position:absolute;top:50%;height:1px;background:var(--border);width:35%}
+.farr::before{left:0}.farr::after{right:0}
+.fdur{font-size:.72rem;color:var(--gray);display:block;margin-bottom:.1rem}
+.fsto{font-size:.68rem}.fsto.dir{color:var(--teal);font-weight:600}.fsto.stp{color:var(--orange)}
+.fprice{text-align:right;min-width:100px}
+.fpp{font-family:'Syne',sans-serif;font-weight:800;font-size:1.25rem;color:var(--navy)}
+.fps{font-size:.72rem;color:var(--gray)}
+
+/* ── CARS ── */
+.carc{background:#fff;border:1.5px solid var(--border);border-radius:12px;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.carc:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(13,27,62,.1)}
+.caremo{height:120px;display:flex;align-items:center;justify-content:center;font-size:4rem;background:var(--light)}
+.carbody{padding:1rem}
+.carnm{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:.25rem}
+.carco{font-size:.75rem;color:var(--gray);margin-bottom:.75rem}
+.carspecs{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem}
+.spec{background:var(--light);color:var(--navy);font-size:.68rem;font-weight:500;padding:.2rem .6rem;border-radius:20px}
+.carpr{display:flex;align-items:center;justify-content:space-between}
+.cprice{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem}
+.cprice span{font-size:.72rem;font-weight:400;color:var(--gray)}
+.carpol{background:rgba(255,107,53,.08);border-radius:8px;padding:.75rem 1rem;margin:.75rem 0 0;font-size:.75rem;color:var(--orange);font-weight:500}
+
+/* ── HOTELS ── */
+.hotc{background:#fff;border:1.5px solid var(--border);border-radius:12px;overflow:hidden;display:flex;transition:box-shadow .2s}
+.hotc:hover{box-shadow:0 6px 24px rgba(13,27,62,.1)}
+.hotimg{width:160px;flex-shrink:0;background:var(--light);display:flex;align-items:center;justify-content:center;font-size:3.5rem}
+.hotbody{padding:1.25rem;flex:1}
+.hotnm{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:.2rem}
+.hotloc{font-size:.78rem;color:var(--gray);margin-bottom:.6rem}
+.stars{color:#f59e0b;font-size:.8rem}
+.hotam{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.75rem}
+.am{background:var(--light);color:var(--navy);font-size:.68rem;padding:.2rem .5rem;border-radius:4px}
+.hotpr{display:flex;align-items:center;justify-content:space-between}
+.hprice{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem}
+.hprice span{font-size:.72rem;font-weight:400;color:var(--gray)}
+.hotlist{display:flex;flex-direction:column;gap:1rem}
+
+/* ── PLANNER ── */
+.ithead{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.dtabs{display:flex;gap:.5rem}
+.dtab{padding:.5rem 1.1rem;border-radius:20px;border:1.5px solid var(--border);font-size:.8rem;font-weight:500;cursor:pointer;transition:all .15s;background:#fff}
+.dtab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.dtab:hover:not(.active){border-color:var(--teal);color:var(--teal)}
+.tline{position:relative;padding-left:2.5rem}
+.tline::before{content:'';position:absolute;left:.9rem;top:0;bottom:0;width:2px;background:var(--border)}
+.tli{position:relative;margin-bottom:1.25rem}
+.tldot{position:absolute;left:-1.85rem;top:.4rem;width:14px;height:14px;border-radius:50%;border:2px solid var(--white);box-shadow:0 0 0 2px var(--teal);background:var(--teal)}
+.tldot.opt{background:#fff;box-shadow:0 0 0 2px var(--gray)}
+.tlcard{background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:1rem 1.25rem}
+.tlcard:hover{border-color:var(--teal)}
+.tltime{font-size:.7rem;color:var(--teal);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.25rem}
+.tltit{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.3rem}
+.tldsc{font-size:.82rem;color:var(--gray);line-height:1.5}
+.tltags{display:flex;gap:.4rem;margin-top:.6rem;flex-wrap:wrap}
+
+/* ── TRANSPORT ── */
+.tcgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem;margin-bottom:2rem}
+.tcard{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:1.5rem;transition:border-color .2s}
+.tcard:hover{border-color:var(--teal)}
+.tcico{font-size:2.5rem;margin-bottom:.75rem}
+.tctit{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:.4rem}
+.tcdsc{font-size:.82rem;color:var(--gray);line-height:1.5;margin-bottom:.75rem}
+.tcsteps{list-style:none;margin-bottom:.75rem}
+.tcsteps li{font-size:.8rem;padding:.3rem 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem}
+.tcsteps li:last-child{border-bottom:none}
+.tcsteps li::before{content:'→';color:var(--teal);font-weight:700}
+
+/* ── MAP ── */
+.mapbox{background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:2rem;margin-bottom:2rem;text-align:center}
+.mstat{display:inline-flex;align-items:center;gap:.75rem;background:var(--navy);color:#fff;padding:1rem 1.5rem;border-radius:12px;margin:.5rem}
+.msn{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;color:var(--teal)}
+.msl{font-size:.8rem;color:rgba(255,255,255,.7)}
+.vpins{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-top:1.25rem}
+.vpin{background:var(--light);border:1.5px solid var(--border);border-radius:20px;padding:.3rem .9rem;font-size:.78rem;font-weight:500;cursor:pointer;transition:background .15s}
+.vpin.v{background:rgba(0,194,184,.12);border-color:var(--teal);color:var(--teal2);font-weight:600}
+
+/* ── TIPS ── */
+.tipgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem}
+.tipc{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:1.5rem;transition:border-color .2s,transform .2s}
+.tipc:hover{border-color:var(--teal);transform:translateY(-2px)}
+.tipico{font-size:2rem;margin-bottom:.6rem}
+.tipcat{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:.3rem}
+.tiptit{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.4rem}
+.tipdsc{font-size:.82rem;color:var(--gray);line-height:1.5}
+.tiphl{background:rgba(0,194,184,.07);border-left:3px solid var(--teal);border-radius:0 6px 6px 0;padding:.5rem .75rem;margin-top:.75rem;font-size:.8rem;color:var(--navy)}
+
+/* ── REMINDERS ── */
+.remlist{display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.5rem}
+.remi{background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;transition:border-color .2s}
+.remi.done{opacity:.5}
+.remi:hover{border-color:var(--teal)}
+.remchk{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .15s;font-size:.7rem}
+.remchk.checked{background:var(--teal);border-color:var(--teal);color:var(--navy)}
+.remico{font-size:1.4rem;flex-shrink:0}
+.remcont{flex:1}
+.remtit{font-weight:500;font-size:.875rem;margin-bottom:.1rem}
+.remwhn{font-size:.75rem;color:var(--gray)}
+.remdel{background:none;border:none;cursor:pointer;color:var(--gray);font-size:1rem;padding:.25rem;transition:color .15s}
+.remdel:hover{color:#dc2626}
+.addform{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:1.5rem}
+.addform h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:1rem}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:300;background:var(--navy);color:#fff;border-radius:10px;padding:.75rem 1.25rem;font-size:.8rem;display:none;align-items:center;gap:.5rem;box-shadow:0 4px 20px rgba(13,27,62,.3);animation:slideUp .3s ease}
+.toast.show{display:flex}
+@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:768px){.sidebar{display:none}.main{margin-left:0}.fsbar{grid-template-columns:1fr 1fr}.hotimg{width:100px}.frow{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-logo" onclick="nav('destination')">
+    <svg width="30" height="30" viewBox="0 0 30 30" fill="none"><path d="M15 2C8 2 3 8 3 15s5 13 12 13 12-6 12-13S22 2 15 2Z" fill="#1a3a6e" opacity=".3"/><path d="M15 1L7 26l8-5 8 5Z" fill="#ff6b35" opacity=".85"/><circle cx="15" cy="13" r="6" fill="#0d1b3e" opacity=".9"/><circle cx="15" cy="13" r="4" fill="#00c2b8" opacity=".9"/><path d="M9 13Q15 7 21 13" stroke="rgba(255,255,255,.5)" stroke-width="1" fill="none"/><path d="M21 7l4-2-1 4Z" stroke="#fff" stroke-width=".8" fill="none"/></svg>
+    <span class="brand">Trav<span>io</span></span>
+  </div>
+  <div class="tsearch">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" placeholder="Search destination, visa, flights…" onkeyup="searchNav(this.value)">
+  </div>
+  <div class="tright">
+    <div class="trip-badge" onclick="nav('planner')">✈ Seoul · Apr 12–15</div>
+    <div class="avatar">FZ</div>
+  </div>
+</header>
+
+<div class="layout">
+<nav class="sidebar">
+  <div class="stcard">
+    <div class="stc-lbl">Current Trip</div>
+    <div class="stc-dest">🇰🇷 Seoul, South Korea</div>
+    <div class="stc-dates">Apr 12 – Apr 15, 2025</div>
+    <div class="stc-prog">
+      <div class="stc-prog-lbl"><span>Day 1 of 3</span><span>33%</span></div>
+      <div class="stc-bar"><div class="stc-fill"></div></div>
+    </div>
+  </div>
+  <div class="ssec">
+    <div class="slabel">Explore</div>
+    <div class="nitem active" id="n-destination" onclick="nav('destination')"><span class="ic">🌍</span>Destinations</div>
+    <div class="nitem" id="n-passport" onclick="nav('passport')"><span class="ic">🛂</span>Passport & Visa</div>
+    <div class="nitem" id="n-flights" onclick="nav('flights')"><span class="ic">✈️</span>Flights</div>
+    <div class="nitem" id="n-cars" onclick="nav('cars')"><span class="ic">🚗</span>Car Rental</div>
+    <div class="nitem" id="n-hotels" onclick="nav('hotels')"><span class="ic">🏨</span>Hotels & Stays</div>
+  </div>
+  <div class="ssec">
+    <div class="slabel">Your Trip</div>
+    <div class="nitem" id="n-planner" onclick="nav('planner')"><span class="ic">🗓️</span>Travel Planner</div>
+    <div class="nitem" id="n-transport" onclick="nav('transport')"><span class="ic">🚇</span>Local Transport</div>
+    <div class="nitem" id="n-map" onclick="nav('map')"><span class="ic">🗺️</span>My World Map</div>
+    <div class="nitem" id="n-tips" onclick="nav('tips')"><span class="ic">💡</span>Tips<span class="nbadge">8</span></div>
+    <div class="nitem" id="n-reminders" onclick="nav('reminders')"><span class="ic">🔔</span>Reminders<span class="nbadge" id="remBadge">3</span></div>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- DESTINATION -->
+<div class="scr active" id="s-destination">
+  <div class="ph"><h1>Where do you want to go?</h1><p>Discover destinations and start planning your trip</p></div>
+  <div class="dhero">
+    <div class="dhero-txt">
+      <h2>Find your next adventure</h2>
+      <p>Select a destination and Travio guides you through visas, flights, hotels and more — all in one place.</p>
+    </div>
+    <div class="dsbox">
+      <div class="fgrp" style="margin:0;flex:1">
+        <label class="flbl" style="color:rgba(255,255,255,.7)">Destination</label>
+        <select class="finp" id="dsel" onchange="pickDest(this.value)">
+          <option value="">Choose a country or city…</option>
+          <option value="seoul">🇰🇷 Seoul, South Korea</option>
+          <option value="tokyo">🇯🇵 Tokyo, Japan</option>
+          <option value="paris">🇫🇷 Paris, France</option>
+          <option value="bali">🇮🇩 Bali, Indonesia</option>
+          <option value="nyc">🇺🇸 New York, USA</option>
+          <option value="rome">🇮🇹 Rome, Italy</option>
+        </select>
+      </div>
+      <button class="btn btn-t" onclick="pickDest(document.getElementById('dsel').value)">Explore →</button>
+    </div>
+  </div>
+  <div class="stit">🔥 Popular Destinations</div>
+  <div class="pgrid">
+    <div class="pcard" onclick="pickDest('seoul')"><div class="pcbg ps"><div class="pcinfo"><h3>Seoul</h3><p>🇰🇷 South Korea</p></div></div></div>
+    <div class="pcard" onclick="pickDest('tokyo')"><div class="pcbg pt"><div class="pcinfo"><h3>Tokyo</h3><p>🇯🇵 Japan</p></div></div></div>
+    <div class="pcard" onclick="pickDest('paris')"><div class="pcbg pp"><div class="pcinfo"><h3>Paris</h3><p>🇫🇷 France</p></div></div></div>
+    <div class="pcard" onclick="pickDest('bali')"><div class="pcbg pb"><div class="pcinfo"><h3>Bali</h3><p>🇮🇩 Indonesia</p></div></div></div>
+    <div class="pcard" onclick="pickDest('nyc')"><div class="pcbg pn"><div class="pcinfo"><h3>New York</h3><p>🇺🇸 USA</p></div></div></div>
+    <div class="pcard" onclick="pickDest('rome')"><div class="pcbg pr"><div class="pcinfo"><h3>Rome</h3><p>🇮🇹 Italy</p></div></div></div>
+  </div>
+  <div id="ddetail" style="display:none">
+    <hr class="shr">
+    <div class="bc"><span onclick="document.getElementById('ddetail').style.display='none'">← Destinations</span> / <span id="dd-n"></span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem">
+      <div class="card" style="cursor:default"><div class="cbody"><div style="font-size:2rem;margin-bottom:.5rem" id="dd-f"></div><div class="ctit" id="dd-t"></div><div class="csub" id="dd-r"></div></div></div>
+      <div class="card" style="cursor:default"><div class="cbody"><div class="csub" style="margin-bottom:.25rem">🌡 Best time</div><div class="ctit" id="dd-s"></div><div class="csub" id="dd-w"></div></div></div>
+      <div class="card" style="cursor:default"><div class="cbody"><div class="csub" style="margin-bottom:.25rem">💰 Budget / day</div><div class="ctit" id="dd-b"></div><div class="csub" id="dd-c"></div></div></div>
+    </div>
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+      <button class="btn btn-p" onclick="nav('passport')">🛂 Check Visa</button>
+      <button class="btn btn-t" onclick="nav('flights')">✈️ Find Flights</button>
+      <button class="btn btn-o" onclick="nav('hotels')">🏨 Browse Hotels</button>
+      <button class="btn btn-o" onclick="nav('tips')">💡 Travel Tips</button>
+    </div>
+  </div>
+</div>
+
+<!-- PASSPORT -->
+<div class="scr" id="s-passport">
+  <div class="ph"><h1>Passport & Visa</h1><p>Check entry requirements before you book</p></div>
+  <div class="vbox">
+    <div class="frow">
+      <div class="fgrp">
+        <label class="flbl">Your passport / nationality</label>
+        <select class="finp" id="ppc">
+          <option value="">Select your nationality…</option>
+          <option value="de">🇩🇪 Germany</option>
+          <option value="us">🇺🇸 United States</option>
+          <option value="co">🇨🇴 Colombia</option>
+          <option value="mx">🇲🇽 Mexico</option>
+          <option value="in">🇮🇳 India</option>
+          <option value="pk">🇵🇰 Pakistan</option>
+          <option value="cn">🇨🇳 China</option>
+          <option value="br">🇧🇷 Brazil</option>
+        </select>
+      </div>
+      <div class="fgrp">
+        <label class="flbl">Destination country</label>
+        <select class="finp" id="pdc">
+          <option value="">Select destination…</option>
+          <option value="kr">🇰🇷 South Korea</option>
+          <option value="jp">🇯🇵 Japan</option>
+          <option value="fr">🇫🇷 France (Schengen)</option>
+          <option value="id">🇮🇩 Indonesia</option>
+          <option value="us">🇺🇸 United States</option>
+          <option value="it">🇮🇹 Italy (Schengen)</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-p" onclick="checkVisa()">Check Requirements →</button>
+    <div class="vres" id="vr"></div>
+  </div>
+</div>
+
+<!-- FLIGHTS -->
+<div class="scr" id="s-flights">
+  <div class="ph"><h1>Flights</h1><p>Compare and find the best fares for your trip</p></div>
+  <div class="fsbar">
+    <div class="fgrp" style="margin:0"><label class="flbl">From</label><input class="finp" type="text" value="Singapore (SIN)" id="fFrom"></div>
+    <div class="fgrp" style="margin:0"><label class="flbl">To</label><input class="finp" type="text" value="Seoul (ICN)" id="fTo"></div>
+    <div class="fgrp" style="margin:0"><label class="flbl">Date</label><input class="finp" type="date" value="2025-04-12"></div>
+    <div class="fgrp" style="margin:0"><label class="flbl">Passengers</label><select class="finp"><option>1 Passenger</option><option>2 Passengers</option><option>3 Passengers</option></select></div>
+    <button class="btn btn-p" onclick="loadFlights()">Search</button>
+  </div>
+  <div id="flist" class="flist"></div>
+</div>
+
+<!-- CARS -->
+<div class="scr" id="s-cars">
+  <div class="ph"><h1>Car Rental</h1><p>Best rentals in Seoul — compare prices and policies</p></div>
+  <div style="background:rgba(255,107,53,.08);border:1.5px solid rgba(255,107,53,.25);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:.85rem;display:flex;align-items:center;gap:.75rem"><span style="font-size:1.2rem">⚠️</span><div><strong>Age Requirement:</strong> Minimum <strong>24 years old</strong> to rent in South Korea. International Driver's Permit (IDP) required for foreign nationals.</div></div>
+  <div class="cgrid" id="cg"></div>
+</div>
+
+<!-- HOTELS -->
+<div class="scr" id="s-hotels">
+  <div class="ph"><h1>Hotels & Stays</h1><p>Best options near central Seoul — hotels and Airbnbs</p></div>
+  <div style="display:flex;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:flex-end">
+    <div class="fgrp" style="margin:0"><label class="flbl">Check-in</label><input class="finp" type="date" value="2025-04-12"></div>
+    <div class="fgrp" style="margin:0"><label class="flbl">Check-out</label><input class="finp" type="date" value="2025-04-15"></div>
+    <div class="fgrp" style="margin:0"><label class="flbl">Guests</label><select class="finp"><option>2 Guests</option><option>1 Guest</option><option>3 Guests</option></select></div>
+    <button class="btn btn-p" onclick="toast('Showing best available rooms for your dates!')">Update Search</button>
+  </div>
+  <div class="hotlist" id="hl"></div>
+</div>
+
+<!-- PLANNER -->
+<div class="scr" id="s-planner">
+  <div class="ph"><h1>Travel Planner</h1><p>Seoul · Apr 12–15, 2025 — Your day-by-day itinerary</p></div>
+  <div class="ithead">
+    <div class="dtabs">
+      <div class="dtab active" onclick="switchDay(1,this)">Day 1 — Heritage</div>
+      <div class="dtab" onclick="switchDay(2,this)">Day 2 — Nature</div>
+      <div class="dtab" onclick="switchDay(3,this)">Day 3 — Free</div>
+    </div>
+    <button class="btn btn-o btn-s" onclick="toast('✨ AI Suggest feature coming soon!')">✨ AI Suggest</button>
+  </div>
+  <div id="pd1" class="tline"></div>
+  <div id="pd2" class="tline" style="display:none"></div>
+  <div id="pd3" class="tline" style="display:none"></div>
+</div>
+
+<!-- TRANSPORT -->
+<div class="scr" id="s-transport">
+  <div class="ph"><h1>Local Transportation</h1><p>Complete guide to getting around Seoul</p></div>
+  <div class="tcgrid" id="tg"></div>
+  <hr class="shr">
+  <div class="stit">📱 Essential Apps for Seoul</div>
+  <div style="display:flex;flex-wrap:wrap;gap:.75rem">
+    <div class="card" style="width:195px;cursor:default"><div class="cbody"><div style="font-size:2rem;margin-bottom:.5rem">🗺️</div><div class="ctit">Naver Maps</div><div class="csub">Best navigation in Korea. Works offline and has transit routes.</div></div><div class="cfoot"><span class="ctag tg">Free</span><button class="btn btn-s btn-t" onclick="toast('Opens Naver Maps in App Store')">Get App</button></div></div>
+    <div class="card" style="width:195px;cursor:default"><div class="cbody"><div style="font-size:2rem;margin-bottom:.5rem">🚕</div><div class="ctit">KakaoTaxi</div><div class="csub">Official Korea taxi app. English language available.</div></div><div class="cfoot"><span class="ctag tg">Free</span><button class="btn btn-s btn-t" onclick="toast('Opens KakaoTaxi in App Store')">Get App</button></div></div>
+    <div class="card" style="width:195px;cursor:default"><div class="cbody"><div style="font-size:2rem;margin-bottom:.5rem">🚇</div><div class="ctit">Subway Korea</div><div class="csub">Offline maps for all Korean city subway lines.</div></div><div class="cfoot"><span class="ctag tg">Free</span><button class="btn btn-s btn-t" onclick="toast('Opens Subway Korea in App Store')">Get App</button></div></div>
+    <div class="card" style="width:195px;cursor:default"><div class="cbody"><div style="font-size:2rem;margin-bottom:.5rem">🚲</div><div class="ctit">따릉이 Bike</div><div class="csub">Seoul public bike sharing. 2,500+ stations citywide.</div></div><div class="cfoot"><span class="ctag tn">₩1,000/hr</span><button class="btn btn-s btn-t" onclick="toast('Opens Ddareungi in App Store')">Get App</button></div></div>
+  </div>
+</div>
+
+<!-- MAP -->
+<div class="scr" id="s-map">
+  <div class="ph"><h1>My World Map</h1><p>Track every country you've visited</p></div>
+  <div class="mapbox">
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.5rem">
+      <div class="mstat"><div class="msn" id="vc">1</div><div class="msl">Countries visited</div></div>
+      <div class="mstat"><div class="msn" id="vp">0.5%</div><div class="msl">Of the world</div></div>
+      <div class="mstat"><div class="msn">1</div><div class="msl">Continents</div></div>
+    </div>
+    <svg viewBox="0 0 900 440" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:8px;background:#e8f4fd">
+      <path d="M80 80 L200 70 L235 115 L220 175 L175 200 L125 220 L88 192 L60 150 Z" fill="#d4e6f5" stroke="#b0ccdf" stroke-width="1"/>
+      <path d="M158 228 L212 218 L242 268 L232 338 L192 378 L160 360 L140 302 L145 250 Z" fill="#d4e6f5" stroke="#b0ccdf" stroke-width="1"/>
+      <path d="M378 58 L472 53 L492 88 L472 120 L432 132 L398 112 L374 90 Z" fill="#d4e6f5" stroke="#b0ccdf" stroke-width="1"/>
+      <path d="M388 138 L462 133 L492 178 L482 258 L452 308 L412 318 L378 280 L368 200 L373 160 Z" fill="#d4e6f5" stroke="#b0ccdf" stroke-width="1"/>
+      <path d="M498 58 L702 53 L752 98 L732 178 L682 218 L622 228 L558 208 L508 168 L488 120 Z" fill="#d4e6f5" stroke="#b0ccdf" stroke-width="1"/>
+      <path d="M668 128 L692 123 L702 140 L690 157 L668 157 L657 140 Z" fill="rgba(0,194,184,.55)" stroke="#00c2b8" stroke-width="1.5" style="cursor:pointer" onclick="toast('🇰🇷 South Korea — visited Apr 12–15, 2025!')"/>
+      <path d="M648 268 L762 268 L792 308 L782 358 L732 378 L670 370 L638 330 Z" fill="#d4e6f5" stroke="#b0ccdf" stroke-width="1"/>
+      <circle cx="679" cy="140" r="7" fill="#ff6b35" stroke="#fff" stroke-width="2"/>
+      <text x="692" y="137" font-size="11" fill="#0d1b3e" font-family="sans-serif" font-weight="bold">Seoul ✓</text>
+      <circle cx="646" cy="216" r="5" fill="#00c2b8" stroke="#fff" stroke-width="1.5"/>
+      <text x="653" y="215" font-size="9" fill="#0d1b3e" font-family="sans-serif">SIN</text>
+    </svg>
+    <div style="margin-top:1.5rem">
+      <div class="stit" style="justify-content:center">🌍 Countries Visited</div>
+      <div class="vpins" id="vpins"></div>
+    </div>
+  </div>
+  <div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:1.25rem">
+    <div class="stit">➕ Add a Country You've Visited</div>
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:flex-end">
+      <div class="fgrp" style="margin:0;flex:1;min-width:200px">
+        <select class="finp" id="asel">
+          <option value="">Select a country…</option>
+          <option value="jp">🇯🇵 Japan</option>
+          <option value="de">🇩🇪 Germany</option>
+          <option value="fr">🇫🇷 France</option>
+          <option value="mx">🇲🇽 Mexico</option>
+          <option value="co">🇨🇴 Colombia</option>
+          <option value="sg">🇸🇬 Singapore</option>
+          <option value="us">🇺🇸 United States</option>
+          <option value="it">🇮🇹 Italy</option>
+          <option value="th">🇹🇭 Thailand</option>
+          <option value="au">🇦🇺 Australia</option>
+        </select>
+      </div>
+      <button class="btn btn-p" onclick="addCountry()">Add to My Map</button>
+    </div>
+  </div>
+</div>
+
+<!-- TIPS -->
+<div class="scr" id="s-tips">
+  <div class="ph"><h1>Seoul Travel Tips</h1><p>Curated by locals — food, safety, timing & packing</p></div>
+  <div class="tipgrid" id="tipg"></div>
+</div>
+
+<!-- REMINDERS -->
+<div class="scr" id="s-reminders">
+  <div class="ph"><h1>Reminders</h1><p>Never forget something important on your trip</p></div>
+  <div class="remlist" id="rl"></div>
+  <div class="addform">
+    <h3>➕ Add New Reminder</h3>
+    <div class="frow">
+      <div class="fgrp"><label class="flbl">Reminder text</label><input class="finp" type="text" id="rt" placeholder="e.g. Pack sunscreen"></div>
+      <div class="fgrp"><label class="flbl">When</label><input class="finp" type="text" id="rw" placeholder="e.g. Before Day 2"></div>
+    </div>
+    <div class="frow">
+      <div class="fgrp"><label class="flbl">Icon (emoji)</label><input class="finp" type="text" id="ri" placeholder="🧴" maxlength="3"></div>
+      <div style="display:flex;align-items:flex-end"><button class="btn btn-p" style="width:100%" onclick="addRem()">Add Reminder</button></div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<div class="toast" id="toastEl"><span id="toastMsg"></span><button onclick="document.getElementById('toastEl').classList.remove('show')" style="background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;margin-left:.5rem;font-size:1rem">✕</button></div>
+
+<script>
+// ══ DATA ══
+const dests={seoul:{flag:'🇰🇷',name:'Seoul',region:'East Asia · South Korea',season:'Spring (Mar–May) & Autumn (Sep–Nov)',weather:'Mild 15–22°C, cherry blossoms in April',budget:'$50–$120/day',currency:'KRW · 1 USD ≈ 1,330 KRW'},tokyo:{flag:'🇯🇵',name:'Tokyo',region:'East Asia · Japan',season:'Spring (Mar–May)',weather:'Mild 12–20°C, cherry blossoms mid-March',budget:'$80–$180/day',currency:'JPY · 1 USD ≈ 148 JPY'},paris:{flag:'🇫🇷',name:'Paris',region:'Western Europe · France',season:'Spring (Apr–Jun)',weather:'Mild 15–24°C, minimal rain',budget:'$100–$250/day',currency:'EUR · 1 USD ≈ 0.92 EUR'},bali:{flag:'🇮🇩',name:'Bali',region:'SE Asia · Indonesia',season:'Dry season (Apr–Oct)',weather:'Warm 27–32°C, low humidity',budget:'$40–$100/day',currency:'IDR · 1 USD ≈ 15,700 IDR'},nyc:{flag:'🇺🇸',name:'New York',region:'North America · USA',season:'Spring (Apr–Jun)',weather:'Mild 15–22°C, occasional rain',budget:'$150–$400/day',currency:'USD'},rome:{flag:'🇮🇹',name:'Rome',region:'Southern Europe · Italy',season:'Spring (Apr–Jun) & Autumn',weather:'Warm 18–26°C, pleasant',budget:'$80–$180/day',currency:'EUR · 1 USD ≈ 0.92 EUR'}};
+
+const visaDB={'de-kr':{ok:true,msg:'🎉 No visa required. German passport holders enter South Korea visa-free for up to 90 days.'},'us-kr':{ok:true,msg:'🎉 No visa required. US passport holders enter South Korea visa-free for up to 90 days.'},'co-kr':{ok:true,msg:'🎉 No visa required. Colombian passport holders enter South Korea visa-free for up to 90 days.'},'mx-kr':{ok:true,msg:'🎉 No visa required. Mexican passport holders enter South Korea visa-free for up to 90 days.'},'br-kr':{ok:true,msg:'🎉 No visa required. Brazilian passport holders enter South Korea visa-free for up to 90 days.'},'in-kr':{ok:false,type:'K-ETA (Electronic Travel Authorization)',msg:'K-ETA required. Apply online at least 72 hours before travel — no embassy visit needed.',link:'https://www.k-eta.go.kr',steps:['Visit k-eta.go.kr and create an account','Fill in your passport details and travel dates','Pay the fee (₩10,000 ≈ $8 USD) by credit card','Receive approval by email within 72 hours','Present the K-ETA confirmation at airline check-in'],emb:{name:'Korean Embassy, New Delhi',addr:'60 Chandragupta Marg, Chanakyapuri, New Delhi 110021',ph:'+91-11-4200-7000'}},'pk-kr':{ok:false,type:'Short-Stay Tourist Visa (C-3)',msg:'Visa required for Pakistani nationals. Apply at the nearest Korean Embassy or Consulate.',steps:['Download the visa application form from the Korean Embassy website','Prepare: valid passport, recent photo, bank statements (last 3 months), travel itinerary, hotel booking confirmation','Submit in person at the Korean Embassy or Consulate','Pay visa fee (~$45 USD)','Processing: 5–7 business days'],emb:{name:'Korean Embassy, Islamabad',addr:'Diplomatic Enclave, G-5/4, Islamabad',ph:'+92-51-279-0769'}},'cn-kr':{ok:false,type:'C-3 Short-term Visa',msg:'Tourist visa required for Chinese nationals visiting South Korea.',steps:['Download form at the Korean Consulate website','Prepare: passport, photo, bank statement, hotel booking, return ticket','Submit at Korean Consulate (multiple cities)','Processing: 5 business days'],emb:{name:'Korean Embassy, Beijing',addr:'No.20 Dongfang East Road, Chaoyang District, Beijing',ph:'+86-10-8531-0700'}},'de-jp':{ok:true,msg:'🎉 No visa required. German passport holders can visit Japan visa-free for up to 90 days.'},'us-jp':{ok:true,msg:'🎉 No visa required. US passport holders can visit Japan visa-free for up to 90 days.'},'co-jp':{ok:true,msg:'🎉 No visa required. Colombian passport holders can visit Japan visa-free for up to 90 days.'},'in-jp':{ok:false,type:'Tourist Visa',msg:'Visa required for Indian passport holders visiting Japan.',steps:['Apply at VFS Global (Japan visa processing center)','Documents: passport, photo, bank statement, employer letter, itinerary','Book appointment at VFS','Processing: 5–7 business days'],emb:{name:'Embassy of Japan, New Delhi',addr:'4-50 G, Shantipath, Chanakyapuri, New Delhi 110021',ph:'+91-11-2687-6581'}},'de-fr':{ok:true,msg:'🎉 No visa required. Germany is part of the Schengen Area — free movement throughout France and 26 other European countries.'},'us-fr':{ok:true,msg:'🎉 No visa required. US passport holders can visit France/Schengen visa-free for up to 90 days in any 180-day period.'},'in-fr':{ok:false,type:'Schengen Visa (Type C)',msg:'Schengen Visa required for Indian nationals to visit France.',steps:['Apply at VFS Global (French Visa Application Center)','Documents: passport, photo, bank statements, travel insurance (min €30,000 coverage), hotel bookings, flight bookings','Submit biometrics at the VFS center','Processing: 15 business days (apply at least 4 weeks in advance)'],emb:{name:'French Embassy, New Delhi',addr:'2/50 E, Shantipath, Chanakyapuri, New Delhi 110021',ph:'+91-11-2419-6100'}}};
+
+const flightsData=[{al:'Korean Air',cd:'KE',cls:'alk',f:'SIN',t:'ICN',dep:'08:10',arr:'15:45',dur:'6h 35m',stp:'Direct',pr:289,lg:'30kg',ml:true,best:true},{al:'Japan Airlines',cd:'JL',cls:'alj',f:'SIN',t:'ICN',dep:'10:30',arr:'18:20',dur:'7h 50m',stp:'1 stop (NRT)',pr:198,lg:'23kg',ml:true,best:false},{al:'Singapore Airlines',cd:'SQ',cls:'als',f:'SIN',t:'ICN',dep:'14:15',arr:'21:55',dur:'7h 40m',stp:'Direct',pr:342,lg:'30kg',ml:true,best:false},{al:'Emirates',cd:'EK',cls:'ale',f:'SIN',t:'ICN',dep:'23:55',arr:'08:40+1',dur:'8h 45m',stp:'1 stop (DXB)',pr:167,lg:'20kg',ml:true,best:false}];
+
+const carsData=[{e:'🚗',n:'Hyundai Avante',co:'Lotte Rent-a-Car',sp:['Compact','Auto','4 seats','A/C'],pr:38,nt:'Popular fuel-efficient city car. Basic insurance included. Free cancellation 24h before pickup.'},
+{e:'🚙',n:'Kia Carnival',co:'KT Rent-a-Car',sp:['Minivan','Auto','7 seats','A/C'],pr:72,nt:'Great for groups. GPS included. Free cancellation 24h before pickup.'},
+{e:'🏎️',n:'Genesis G80',co:'SK Rent-a-Car',sp:['Luxury','Auto','5 seats','A/C'],pr:115,nt:'Premium experience. Premium insurance + GPS + airport delivery included.'},
+{e:'🚙',n:'Kia Sorento SUV',co:'Lotte Rent-a-Car',sp:['SUV','Auto','5 seats','4WD'],pr:65,nt:'Great for day trips to mountains. Child seat available on request.'},
+{e:'⚡',n:'Hyundai Ioniq 6',co:'Green Mobility',sp:['Electric','Auto','5 seats','A/C'],pr:55,nt:'EV with free charging at 5,000+ stations. Zero emissions. Range: 500km.'},
+{e:'🛻',n:'Ssangyong Rexton',co:'Korea Rent-a-Car',sp:['SUV','Auto','7 seats','4WD'],pr:88,nt:'Best for countryside trips and Jeju Island. Roof rack available.'}];
+
+const hotelsData=[{e:'🏨',n:'Lotte Hotel Seoul',loc:'Myeongdong · 0.5km from Gyeongbokgung',st:5,am:['Spa','Pool','Gym','Rooftop Bar','Free WiFi'],pr:245,ab:false},
+{e:'🏩',n:'Ibis Styles Ambassador',loc:'Gangnam · Near COEX Mall',st:3,am:['Gym','Free WiFi','24h Desk','Restaurant'],pr:89,ab:false},
+{e:'🏡',n:'Bukchon Hanok Stay',loc:'Bukchon Village · Traditional Quarter',st:0,am:['Kitchen','Free WiFi','Outdoor','Heritage Building'],pr:120,ab:true},
+{e:'🏢',n:'Signiel Seoul',loc:'Lotte World Tower · Panoramic Views',st:5,am:['Infinity Pool','Butler Service','Fine Dining','Spa'],pr:480,ab:false},
+{e:'🛖',n:'Myeongdong Boutique',loc:'Myeongdong · Heart of Shopping District',st:3,am:['Free WiFi','24h Desk','Concierge'],pr:65,ab:false}];
+
+const plannerData={1:[{t:'08:00',tit:'Gyeongbokgung Palace',dsc:"Korea's most iconic royal palace. Arrive early for the changing of the guard ceremony at 10:00 AM. Dress code respectful — no shorts inside halls.",tags:[['Culture','tg'],['Top Pick','to']],opt:false},
+{t:'10:30',tit:'Bukchon Hanok Village',dsc:"Stroll through traditional Korean hanok houses in the hills between palaces. Perfect for photography and quiet reflection.",tags:[['Heritage','tn'],['Walk','tg']],opt:false},
+{t:'13:00',tit:'Lunch in Insadong',dsc:"Try bibimbap or samgyeopsal at local restaurants. Insadong is famous for authentic, non-tourist Korean food.",tags:[['Food','tn'],['Local','tg']],opt:false},
+{t:'15:00',tit:'Myeongdong Shopping',dsc:"Seoul's busiest shopping district — K-beauty products, fashion and street food. Pick up your T-Money transit card here.",tags:[['Shopping','tn'],['Street Food','to']],opt:false},
+{t:'19:00',tit:'Cheonggyecheon Evening Walk',dsc:"Beautiful illuminated stream walk through the heart of the city. Street food vendors line the banks after sunset.",tags:[['Evening','tg'],['Free','tn']],opt:false}],
+2:[{t:'09:00',tit:'Cheonggyecheon Morning Walk',dsc:"Start the day along the restored urban stream. Flat path ideal for a gentle, peaceful pace alongside locals.",tags:[['Nature','tg'],['Walk','tn']],opt:false},
+{t:'11:00',tit:'COEX Aquarium & Mall',dsc:"One of Asia's largest underground aquariums followed by shopping in the massive COEX Mall and the famous Starfield Library.",tags:[['Indoor','tg'],['K-Pop','to']],opt:false},
+{t:'13:30',tit:'Gangnam District',dsc:"Explore Seoul's upscale neighbourhood — K-pop entertainment offices, luxury brands and themed cafes. Visit SMTOWN.",tags:[['K-Pop','to'],['Shopping','tn']],opt:false},
+{t:'16:00',tit:'Dongdaemun Design Plaza',dsc:"Zaha Hadid's futuristic DDP building. Hosts rotating fashion and design exhibitions. Stunning at night.",tags:[['Design','tg'],['Architecture','tn']],opt:false},
+{t:'20:00',tit:'DDP Night Market',dsc:"Evening street food and open-air shopping. Open until midnight. Try tteokbokki and Korean corn dogs.",tags:[['Night','to'],['Food','tg']],opt:true}],
+3:[{t:'09:00',tit:'Namsan Seoul Tower',dsc:"Iconic N Seoul Tower with 360° panoramic views. Take the cable car or hike up the tree-lined path. Love locks at the fence.",tags:[['Views','tg'],['Iconic','to']],opt:false},
+{t:'12:00',tit:'Itaewon Brunch',dsc:"International food scene — Korean-Mexican fusion, classic brunch spots or hidden local gems. Very foreigner-friendly neighbourhood.",tags:[['Food','tn'],['Flexible','tg']],opt:false},
+{t:'14:00',tit:'Hongdae Free Time',dsc:"Seoul's youth and arts district. Street performances, indie boutiques, vinyl stores and themed cafes. No agenda needed.",tags:[['Art','tg'],['Free','tn']],opt:false},
+{t:'18:30',tit:'Farewell Korean BBQ',dsc:"End the trip with Korean BBQ — samgyeopsal or galbi. Recommended: Maple Tree House near Bukchon or Palsaik (8-flavour pork BBQ).",tags:[['BBQ','to'],['Must-Do','to']],opt:false}]};
+
+const transportData=[{ic:'🚇',tit:'Seoul Metro',dsc:'Fastest and most reliable way around Seoul. 9 lines, English signage throughout, covers the entire city and suburbs.',steps:['Buy a T-Money card at any metro station (₩2,500 deposit)','Tap in and out at the yellow turnstile readers','Recharge at any kiosk, CU or GS25 convenience store'],note:'Fare: ₩1,400 (~$1) per trip. Transfer discounts apply. Runs 5:30 AM – midnight.'},
+{ic:'🚌',tit:'City Bus',dsc:'Three types: blue (trunk routes), green (local/feeder), red (express suburbs). All air-conditioned with English displays.',steps:['Use T-Money card or exact cash (no change given)','Stop displays show next bus arrival in English','Google Maps and Naver Maps both work well for routes'],note:'Fare: ₩1,200 per trip. Free transfer within 30 minutes of previous tap-out.'},
+{ic:'🚕',tit:'Taxi',dsc:'Widely available and affordable. Regular (silver/orange), Kakao Black (premium). Very safe and metered.',steps:['Hail from street or use KakaoTaxi app (most reliable)','Show destination address on Google Maps if needed','Pay by cash or card — Visa/Mastercard accepted in most taxis'],note:'Base fare: ₩3,800. Most rides in central Seoul under ₩15,000 (~$11).'},
+{ic:'🚲',tit:"Ddareungi Bike",dsc:"Seoul's public bicycle sharing. 2,500+ stations citywide — great for the Han River park cycling path.",steps:['Download the Ddareungi (따릉이) app','Register with your phone number (foreign numbers work)','Unlock bike with QR code at any station','Return to any station within the city'],note:'₩1,000/hour. Day pass ₩5,000. Perfect for the 44km Han River bike path.'}];
+
+const tipsData=[{ic:'🌸',cat:'Best Time',tit:'Visit in April',dsc:'Cherry blossoms peak in early April. Parks like Yeouido and Gyeongbokgung fill with pink blooms and local festivals.',hl:'April 5–15 is typically peak blossom. Book accommodation at least 2 months in advance.'},
+{ic:'🍜',cat:'Food',tit:'Must-Try Dishes',dsc:'Bibimbap, tteokbokki, samgyeopsal, Korean fried chicken, bingsu (shaved ice). Avoid tourist restaurants near main palaces.',hl:'Gwangjang Market (est. 1905) has the best bindaetteok and mayak gimbap. Very cheap and authentic.'},
+{ic:'💳',cat:'Money',tit:'T-Money Card',dsc:'Get a T-Money card at Incheon Airport immediately upon arrival. Works for metro, bus, taxi and convenience stores.',hl:'Load ₩30,000 (~$23) to start. Refund unused balance at the airport before departing.'},
+{ic:'🛡️',cat:'Safety',tit:'Very Safe City',dsc:'Seoul consistently ranks among the safest major cities globally. Petty crime is extremely rare. Police stations everywhere.',hl:'Emergency numbers: 112 (Police) · 119 (Fire/Ambulance) · 1330 (Tourism Hotline in English)'},
+{ic:'📶',cat:'Connectivity',tit:'Pocket WiFi or SIM',dsc:'Rent a pocket WiFi at Incheon Airport arrivals hall. Or buy a prepaid USIM (SKT/KT) for ~$15 for 7 days unlimited.',hl:'Airport SIM desks in arrivals hall open 24/7. Much cheaper than roaming with your home carrier.'},
+{ic:'🕐',cat:'Timing',tit:'Avoid Crowds',dsc:'Gyeongbokgung: arrive before 9 AM. Myeongdong: go afternoon or evening for street food energy.',hl:'Most palaces open 9 AM–6 PM (closed Tuesdays). N Seoul Tower and Han River parks are 24/7.'},
+{ic:'🍺',cat:'Nightlife',tit:'Where to Go at Night',dsc:'Itaewon for international vibe, Hongdae for youthful energy and live music. Sinchon for students. All active until 4 AM weekends.',hl:'Convenience stores (GS25, CU, 7-Eleven) are open 24h everywhere — cheap snacks and soju.'},
+{ic:'🧥',cat:'Packing',tit:'What to Pack for April',dsc:'Light jacket for evenings (10–15°C), comfortable walking shoes (you will walk 15,000+ steps/day), foldable umbrella.',hl:'Leave room in your suitcase — Korean beauty and skincare products are 30–50% cheaper than Europe.'}];
+
+// ══ STATE ══
+const st={visited:[{c:'kr',f:'🇰🇷',n:'South Korea'}],rems:[{id:1,ic:'🕌',t:'Check passport expiry date',w:'Before booking',done:false},{id:2,ic:'🧴',t:'Pack sunscreen & beach towel',w:'Day 2 morning',done:false},{id:3,ic:'💳',t:'Get T-Money card at airport',w:'Arrival at Incheon',done:true},{id:4,ic:'🌂',t:'Pack foldable umbrella',w:'Day 1 morning',done:false},{id:5,ic:'📸',t:'Charge camera and spare battery',w:'Night before Day 1',done:false}]};
+
+const ctryLabels={jp:'🇯🇵 Japan',de:'🇩🇪 Germany',fr:'🇫🇷 France',mx:'🇲🇽 Mexico',co:'🇨🇴 Colombia',sg:'🇸🇬 Singapore',us:'🇺🇸 United States',it:'🇮🇹 Italy',th:'🇹🇭 Thailand',au:'🇦🇺 Australia'};
+
+// ══ NAV ══
+function nav(s){
+  document.querySelectorAll('.scr').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nitem').forEach(x=>x.classList.remove('active'));
+  document.getElementById('s-'+s).classList.add('active');
+  const ni=document.getElementById('n-'+s);
+  if(ni) ni.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ══ TOAST ══
+let tt;
+function toast(msg,dur=3200){
+  clearTimeout(tt);
+  document.getElementById('toastMsg').textContent=msg;
+  document.getElementById('toastEl').classList.add('show');
+  tt=setTimeout(()=>document.getElementById('toastEl').classList.remove('show'),dur);
+}
+
+// ══ DESTINATION ══
+function pickDest(k){
+  if(!k){toast('Please select a destination first.');return;}
+  const d=dests[k];
+  if(!d)return;
+  document.getElementById('dd-n').textContent=d.name;
+  document.getElementById('dd-f').textContent=d.flag;
+  document.getElementById('dd-t').textContent=d.name;
+  document.getElementById('dd-r').textContent=d.region;
+  document.getElementById('dd-s').textContent=d.season;
+  document.getElementById('dd-w').textContent=d.weather;
+  document.getElementById('dd-b').textContent=d.budget;
+  document.getElementById('dd-c').textContent=d.currency;
+  const det=document.getElementById('ddetail');
+  det.style.display='block';
+  setTimeout(()=>det.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  nav('destination');
+}
+
+// ══ VISA ══
+function checkVisa(){
+  const p=document.getElementById('ppc').value;
+  const d=document.getElementById('pdc').value;
+  if(!p||!d){toast('Please select both passport and destination.');return;}
+  const key=p+'-'+d;
+  const r=visaDB[key];
+  const el=document.getElementById('vr');
+  if(!r){
+    el.className='vres show vreq';
+    el.innerHTML='<h3>⚠️ Requirement Unknown</h3><p>We don\'t have specific data for this combination. Check the official embassy website or <a class="lbtn" href="https://www.iata.org" target="_blank">IATA Travel Centre →</a></p>';
+  } else if(r.ok){
+    el.className='vres show vok';
+    el.innerHTML=`<h3>${r.msg}</h3><p style="color:var(--teal2);font-weight:500">✅ You're ready to book. No embassy visit needed.</p><div style="margin-top:1rem;display:flex;gap:.75rem;flex-wrap:wrap"><button class="btn btn-t btn-s" onclick="nav('flights')">✈️ Find Flights</button><button class="btn btn-o btn-s" onclick="nav('hotels')">🏨 Browse Hotels</button></div>`;
+  } else {
+    const steps=r.steps.map(s=>`<li>${s}</li>`).join('');
+    const emb=r.emb?`<div class="embc"><div class="embico">🏛️</div><div class="embinfo"><h4>${r.emb.name}</h4><p>${r.emb.addr}<br>${r.emb.ph}</p></div></div>`:'';
+    const lnk=r.link?`<p><a class="lbtn" href="${r.link}" target="_blank">Apply Online at ${r.link} →</a></p>`:'';
+    el.className='vres show vreq';
+    el.innerHTML=`<h3>⚠️ ${r.type} Required</h3><p>${r.msg}</p><ul class="vsteps">${steps}</ul>${lnk}${emb}`;
+  }
+}
+
+// ══ FLIGHTS ══
+function loadFlights(){
+  const c=document.getElementById('flist');
+  c.innerHTML='';
+  flightsData.forEach(f=>{
+    const sc=f.stp==='Direct'?'dir':'stp';
+    c.innerHTML+=`<div class="frow${f.best?' best':''}">${f.best?'<span class="bbadge">BEST DEAL</span>':''}
+      <div class="airl"><div class="alogo ${f.cls}">${f.cd}</div><div><div class="anm">${f.al}</div><div class="acd">${f.cd}${f.id||Math.floor(Math.random()*900+100)}</div></div></div>
+      <div class="ftimes">
+        <div class="ftc"><div class="ftt">${f.dep}</div><div class="fta">${f.f}</div></div>
+        <div class="farr"><span class="fdur">${f.dur}</span><span class="fsto ${sc}">${f.stp}</span></div>
+        <div class="ftc"><div class="ftt">${f.arr}</div><div class="fta">${f.t}</div></div>
+      </div>
+      <div style="font-size:.75rem;color:var(--gray);text-align:center;min-width:80px">🧳 ${f.lg}<br>🍽 ${f.ml?'Meals incl.':'No meals'}</div>
+      <div class="fprice"><div class="fpp">$${f.pr}</div><div class="fps">per person</div><div style="margin-top:.5rem"><button class="btn btn-s btn-${f.best?'t':'p'}" onclick="toast('Redirecting to ${f.al} booking page ✈️')">Book</button></div></div>
+    </div>`;
+  });
+  toast('Found 4 flights for your search ✈️');
+}
+
+// ══ CARS ══
+function renderCars(){
+  const g=document.getElementById('cg');
+  carsData.forEach(c=>{
+    g.innerHTML+=`<div class="carc">
+      <div class="caremo">${c.e}</div>
+      <div class="carbody">
+        <div class="carnm">${c.n}</div>
+        <div class="carco">${c.co}</div>
+        <div class="carspecs">${c.sp.map(s=>`<span class="spec">${s}</span>`).join('')}</div>
+        <div class="carpr"><div class="cprice">$${c.pr} <span>/day</span></div><button class="btn btn-s btn-t" onclick="toast('Reserving ${c.n} with ${c.co}…')">Reserve</button></div>
+        <div class="carpol">⚠️ Min age 24 · IDP required</div>
+        <p style="font-size:.76rem;color:var(--gray);margin-top:.6rem;line-height:1.4">${c.nt}</p>
+      </div>
+    </div>`;
+  });
+}
+
+// ══ HOTELS ══
+function renderHotels(){
+  const l=document.getElementById('hl');
+  hotelsData.forEach(h=>{
+    const stars=h.st>0?'⭐'.repeat(h.st):`<span style="color:var(--teal);font-weight:600;font-size:.8rem">Airbnb</span>`;
+    l.innerHTML+=`<div class="hotc">
+      <div class="hotimg">${h.e}</div>
+      <div class="hotbody">
+        <div class="hotnm">${h.n}</div>
+        <div class="hotloc">📍 ${h.loc}</div>
+        <div class="stars">${stars}</div>
+        <div class="hotam">${h.am.map(a=>`<span class="am">${a}</span>`).join('')}</div>
+        <div class="hotpr">
+          <div class="hprice">$${h.pr} <span>/night</span></div>
+          <div style="display:flex;gap:.5rem">
+            <button class="btn btn-s btn-o" onclick="toast('Viewing details for ${h.n}')">Details</button>
+            <button class="btn btn-s btn-p" onclick="toast('Booking ${h.n}…')">Book</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  });
+}
+
+// ══ PLANNER ══
+function renderPlanner(){
+  [1,2,3].forEach(day=>{
+    const c=document.getElementById('pd'+day);
+    plannerData[day].forEach(i=>{
+      const tags=i.tags.map(t=>`<span class="ctag ${t[1]}">${t[0]}</span>`).join('');
+      c.innerHTML+=`<div class="tli">
+        <div class="tldot${i.opt?' opt':''}"></div>
+        <div class="tlcard">
+          <div class="tltime">⏰ ${i.t}</div>
+          <div class="tltit">${i.tit}</div>
+          <div class="tldsc">${i.dsc}</div>
+          <div class="tltags">${tags}</div>
+        </div>
+      </div>`;
+    });
+  });
+}
+function switchDay(d,el){
+  document.querySelectorAll('.dtab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  [1,2,3].forEach(i=>document.getElementById('pd'+i).style.display=i===d?'block':'none');
+}
+
+// ══ TRANSPORT ══
+function renderTransport(){
+  const g=document.getElementById('tg');
+  transportData.forEach(tc=>{
+    const steps=tc.steps.map(s=>`<li>${s}</li>`).join('');
+    g.innerHTML+=`<div class="tcard">
+      <div class="tcico">${tc.ic}</div>
+      <div class="tctit">${tc.tit}</div>
+      <div class="tcdsc">${tc.dsc}</div>
+      <ul class="tcsteps">${steps}</ul>
+      <div style="background:rgba(0,194,184,.08);border-radius:6px;padding:.6rem .8rem;font-size:.78rem;color:var(--teal2);font-weight:500">ℹ️ ${tc.note}</div>
+    </div>`;
+  });
+}
+
+// ══ MAP ══
+function renderPins(){
+  const c=document.getElementById('vpins');
+  c.innerHTML='';
+  st.visited.forEach(v=>{
+    c.innerHTML+=`<div class="vpin v" onclick="toast('Visited: ${v.f} ${v.n}')">${v.f} ${v.n}</div>`;
+  });
+  document.getElementById('vc').textContent=st.visited.length;
+  document.getElementById('vp').textContent=(st.visited.length/195*100).toFixed(1)+'%';
+}
+function addCountry(){
+  const sel=document.getElementById('asel');
+  const c=sel.value;
+  if(!c){toast('Select a country first.');return;}
+  if(st.visited.find(v=>v.c===c)){toast('Already in your map!');return;}
+  const lbl=ctryLabels[c];
+  const f=lbl.split(' ')[0];
+  const n=lbl.split(' ').slice(1).join(' ');
+  st.visited.push({c,f,n});
+  renderPins();
+  toast(`Added ${f} ${n} to your world map! 🌍`);
+  sel.value='';
+}
+
+// ══ TIPS ══
+function renderTips(){
+  const g=document.getElementById('tipg');
+  tipsData.forEach(t=>{
+    g.innerHTML+=`<div class="tipc">
+      <div class="tipico">${t.ic}</div>
+      <div class="tipcat">${t.cat}</div>
+      <div class="tiptit">${t.tit}</div>
+      <div class="tipdsc">${t.dsc}</div>
+      <div class="tiphl">💡 ${t.hl}</div>
+    </div>`;
+  });
+}
+
+// ══ REMINDERS ══
+function renderRems(){
+  const l=document.getElementById('rl');
+  l.innerHTML='';
+  st.rems.forEach(r=>{
+    l.innerHTML+=`<div class="remi${r.done?' done':''}">
+      <div class="remchk${r.done?' checked':''}" onclick="toggleRem(${r.id})">${r.done?'✓':''}</div>
+      <div class="remico">${r.ic}</div>
+      <div class="remcont">
+        <div class="remtit"${r.done?' style="text-decoration:line-through"':''}>${r.t}</div>
+        <div class="remwhn">📅 ${r.w}</div>
+      </div>
+      <button class="remdel" onclick="delRem(${r.id})">🗑</button>
+    </div>`;
+  });
+  const pending=st.rems.filter(r=>!r.done).length;
+  document.getElementById('remBadge').textContent=pending;
+}
+function toggleRem(id){const r=st.rems.find(r=>r.id===id);if(r){r.done=!r.done;renderRems();toast(r.done?'✅ Done!':'↩️ Marked pending');}}
+function delRem(id){st.rems=st.rems.filter(r=>r.id!==id);renderRems();toast('Reminder deleted.');}
+function addRem(){
+  const t=document.getElementById('rt').value.trim();
+  const w=document.getElementById('rw').value.trim()||'No date';
+  const ic=document.getElementById('ri').value.trim()||'🔔';
+  if(!t){toast('Please enter a reminder text.');return;}
+  st.rems.push({id:Date.now(),ic,t,w,done:false});
+  document.getElementById('rt').value='';
+  document.getElementById('rw').value='';
+  document.getElementById('ri').value='';
+  renderRems();
+  toast('✅ Reminder added!');
+}
+
+// ══ SEARCH NAV ══
+function searchNav(v){
+  v=v.toLowerCase();
+  if(v.length<2)return;
+  if(v.includes('visa')||v.includes('passport'))nav('passport');
+  else if(v.includes('flight')||v.includes('plane'))nav('flights');
+  else if(v.includes('hotel')||v.includes('stay')||v.includes('airbnb'))nav('hotels');
+  else if(v.includes('car')||v.includes('rent'))nav('cars');
+  else if(v.includes('plan')||v.includes('itinerary'))nav('planner');
+  else if(v.includes('transport')||v.includes('metro')||v.includes('subway')||v.includes('bus')||v.includes('taxi'))nav('transport');
+  else if(v.includes('map')||v.includes('world'))nav('map');
+  else if(v.includes('tip')||v.includes('food'))nav('tips');
+  else if(v.includes('remind'))nav('reminders');
+}
+
+// ══ INIT ══
+document.addEventListener('DOMContentLoaded',()=>{
+  renderCars();
+  renderHotels();
+  renderPlanner();
+  renderTransport();
+  renderPins();
+  renderTips();
+  renderRems();
+  loadFlights();
+});
+</script>
+</body>
+</html>
